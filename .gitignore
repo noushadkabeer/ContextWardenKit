@@ -1,0 +1,10 @@
+.DS_Store
+/.build
+/Packages
+/*.xcodeproj
+xcuserdata/
+DerivedData/
+.swiftpm/configuration/build.xcconfig
+.swiftpm/xcode/xcuserdata/
+.swiftpm/xcode/xcshareddata/
+.swiftlint.yml

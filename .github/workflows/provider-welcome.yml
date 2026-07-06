@@ -1,0 +1,37 @@
+name: Welcome new provider PRs
+
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - 'Sources/ContextWardenKit/Providers/**'
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number,
+          });
+
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            body: `Thanks for adding a new provider! 🎉
+
+            Quick checklist before we review:
+            - [ ] Provider conforms to \`AIToolProvider\` protocol
+            - [ ] Tests in \`Tests/ContextWardenKitTests/\`
+            - [ ] Added to \`UniversalAIMonitor.inferenceProviders\`
+            - [ ] Model path added to \`ModelInventoryEngine.scanPaths\`
+            - [ ] CHANGELOG.md updated
+            - [ ] No third-party dependencies added
+
+            We'll review within 48 hours. Thanks for contributing!`
+          });

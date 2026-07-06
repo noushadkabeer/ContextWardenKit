@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: macos-14
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Run security audit
+      run: bash Scripts/security-audit.sh
+
+    - name: Build release
+      run: swift build -c release
+
+    - name: Run tests
+      run: swift test
+
+    - name: Extract changelog entry
+      id: changelog
+      run: |
+        # Extract the latest version's changelog entry
+        VERSION=${GITHUB_REF#refs/tags/v}
+        NOTES=$(awk "/## \[$VERSION\]/,/## \[/" \
+          CHANGELOG.md | head -n -1)
+        echo "notes<<EOF" >> $GITHUB_OUTPUT
+        echo "$NOTES" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: ContextWardenKit ${{ github.ref }}
+        body: ${{ steps.changelog.outputs.notes }}
+        draft: false
+        prerelease: false

@@ -1,0 +1,29 @@
+name: Mark stale issues and PRs
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday at 9am UTC
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/stale@v9
+      with:
+        stale-issue-message: >
+          This issue has been inactive for 30 days.
+          If it's still relevant, please comment to
+          keep it open. Otherwise it will be closed
+          in 7 days.
+        stale-pr-message: >
+          This PR has been inactive for 14 days.
+          Please update it or it will be closed in
+          7 days. Need help? Comment and we'll assist.
+        close-issue-message: >
+          Closing due to inactivity. Please reopen
+          if this is still relevant.
+        days-before-issue-stale: 30
+        days-before-pr-stale: 14
+        days-before-close: 7
+        exempt-issue-labels: 'pinned,security,provider-request'
+        exempt-pr-labels: 'pinned'
